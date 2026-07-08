@@ -98,6 +98,20 @@ npm run build
 
 ---
 
+## 🤝 贡献者 (Contributors)
+
+感谢以下 AI 大模型的协作开发支持 🙏  
+*(Special thanks to the following AI collaborators for pair-programming support)*
+
+| 贡献者 | 角色 |
+|---|---|
+| **毅白 · YIBAI** 👤 | 产品设计 & 项目负责人 (Product Owner) |
+| **[ChatGPT](https://chat.openai.com)** 🤖 | 架构咨询 & 代码协作 (Architecture & Code) |
+| **[Claude](https://claude.ai)** 🤖 | 核心逻辑 & 代码生成 (Core Logic & Codegen) |
+| **[Gemini](https://gemini.google.com)** 🤖 | UI 优化 & 细节打磨 (UI Polishing) |
+
+---
+
 ## ⚖️ 开源协议 (License)
 
 Based on the [MIT License](LICENSE).
