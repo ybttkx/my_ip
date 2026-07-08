@@ -1,0 +1,78 @@
+{
+  "Metadata": {
+    "title": "IP Intelligence Hub | 高颜值 IP 智能分析平台",
+    "description": "提供公网 IP 检测、纯净度评分、地理位置定位、ISP 与 ASN 查询及各大 AI 服务可用性分析。"
+  },
+  "Home": {
+    "title": "IP Intelligence Hub",
+    "heading1": "IP 智能分析",
+    "heading2": "极简呈现",
+    "subtitle": "现代化、高颜值的 IP 智能分析与纯净度评估系统",
+    "placeholder": "输入 IPv4, IPv6 或域名...",
+    "button": "分析 IP",
+    "analyzing": "正在分析...",
+    "auto_detecting": "正在自动获取并分析您的公网 IP...",
+    "history": "最近查询记录",
+    "clear_history": "清除记录",
+    "no_history": "暂无查询历史",
+    "invalid_input": "请输入合法的 IP 地址或域名"
+  },
+  "Dashboard": {
+    "basic_info": "基础地理信息",
+    "ip_type": "IP 类型研判",
+    "purity_score": "IP 纯净度评分",
+    "ai_availability": "AI 服务可用性",
+    "share_report": "分享分析报告",
+    "download_card": "保存分享图片",
+    "copy_link": "复制分享链接",
+    "copy_success": "链接已成功复制到剪贴板！",
+    "copy_failed": "复制链接失败，请手动复制",
+    "back_home": "返回首页",
+    "refresh": "重新分析",
+    "purity": "纯净度",
+    "score_excellent": "极佳",
+    "score_good": "良好",
+    "score_average": "一般",
+    "score_warning": "风险较高",
+    "score_danger": "高风险",
+    "type_residential": "住宅宽带 (Residential)",
+    "type_idc": "数据中心 (IDC)",
+    "type_hosting": "托管/云主机 (Hosting)",
+    "type_mobile": "移动蜂窝 (Mobile)",
+    "type_education": "教育机构 (Education)",
+    "type_business": "商业企业 (Business)",
+    "type_unknown": "未知网络 (Unknown)",
+    "fields": {
+      "ip": "IP 地址",
+      "country": "国家/地区",
+      "region": "省份/州",
+      "city": "城市/区",
+      "coordinates": "经纬度",
+      "timezone": "时区",
+      "asn": "ASN 编号",
+      "asnOrg": "ASN 机构",
+      "isp": "运营商 (ISP)",
+      "reverseDns": "反向 DNS (PTR)"
+    }
+  },
+  "AI": {
+    "chatgpt": "ChatGPT (OpenAI)",
+    "claude": "Claude (Anthropic)",
+    "gemini": "Gemini (Google)",
+    "perplexity": "Perplexity",
+    "grok": "Grok (xAI)",
+    "status_available": "可用",
+    "status_restricted": "可能受限",
+    "status_blocked": "不可用",
+    "reason_available": "该 IP 地理区域和网络类型符合该服务的正常访问规则。",
+    "reason_restricted": "该 IP 属于云服务或机房网段，可能会触发安全滑块验证、需要额外的人机校验，或访问被速率限制。",
+    "reason_blocked": "该服务在该 IP 所在的国家/地区不可用，或者该服务的安全系统屏蔽了此 IP 网段。"
+  },
+  "Errors": {
+    "title": "分析出错",
+    "desc": "无法获取或解析目标 IP 的地理与安全数据。请检查网络或更换查询地址。",
+    "not_found_title": "404 - 页面未找到",
+    "not_found_desc": "您访问的页面不存在或 IP 分析报告已失效。",
+    "retry": "重试"
+  }
+}

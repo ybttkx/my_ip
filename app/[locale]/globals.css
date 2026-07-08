@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+
+    --radius: 0.5rem;
+
+    --spotlight-glow: rgba(0, 0, 0, 0.015);
+    --grid-line: rgba(0, 0, 0, 0.035);
+  }
+
+  .dark {
+    --background: 0 0% 0%; /* Pure Black - Vercel style */
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%; /* Deepest Gray */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 10%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 12.9%; /* Ultra-thin border */
+    --input: 240 3.7% 12.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --spotlight-glow: rgba(120, 119, 198, 0.12);
+    --grid-line: rgba(255, 255, 255, 0.02);
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border) / 0.4);
+  }
+  html, body {
+    @apply antialiased transition-colors duration-300;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Linear/Vercel Cosmic Spotlight Effect */
+.cosmic-spotlight {
+  background: radial-gradient(
+    ellipse 60% 40% at 50% -10%,
+    var(--spotlight-glow) 0%,
+    transparent 80%
+  );
+  pointer-events: none;
+}
+
+/* Coordinate Grid Lines */
+.cosmic-grid {
+  background-image: 
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Raycast/Apple Glass Panel styling */
+.premium-glass {
+  background: rgba(255, 255, 255, 0.015);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.premium-glass:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7);
+}
+
+/* High-end glow badges */
+.glow-dot-green {
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
+}
+.glow-dot-amber {
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+}
+.glow-dot-rose {
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.6);
+}
+
+/* Smooth custom scrollbars for tech UI */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}

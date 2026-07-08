@@ -1,0 +1,78 @@
+{
+  "Metadata": {
+    "title": "IP Intelligence Hub | High-Aesthetic IP Analysis Platform",
+    "description": "Provide public IP detection, purity score rating, geographic location, ISP & ASN lookup, and AI service availability analysis."
+  },
+  "Home": {
+    "title": "IP Intelligence Hub",
+    "heading1": "IP Intelligence",
+    "heading2": "Simplified.",
+    "subtitle": "Modern, High-Aesthetic IP Intelligence & Purity Assessment System",
+    "placeholder": "Enter IPv4, IPv6 or domain...",
+    "button": "Analyze",
+    "analyzing": "Analyzing...",
+    "auto_detecting": "Detecting and analyzing your public IP...",
+    "history": "Recent Searches",
+    "clear_history": "Clear",
+    "no_history": "No query history",
+    "invalid_input": "Please enter a valid IP address or domain"
+  },
+  "Dashboard": {
+    "basic_info": "Geographic Info",
+    "ip_type": "IP Type Assessment",
+    "purity_score": "IP Clean Score",
+    "ai_availability": "AI Service Availability",
+    "share_report": "Share Report",
+    "download_card": "Save Report Image",
+    "copy_link": "Copy Link",
+    "copy_success": "Link copied to clipboard successfully!",
+    "copy_failed": "Failed to copy link, please copy manually",
+    "back_home": "Back Home",
+    "refresh": "Analyze Again",
+    "purity": "Purity",
+    "score_excellent": "Excellent",
+    "score_good": "Good",
+    "score_average": "Average",
+    "score_warning": "Warning",
+    "score_danger": "High Risk",
+    "type_residential": "Residential",
+    "type_idc": "Datacenter (IDC)",
+    "type_hosting": "Hosting / Cloud VPS",
+    "type_mobile": "Mobile Cellular",
+    "type_education": "Education",
+    "type_business": "Business / Enterprise",
+    "type_unknown": "Unknown Network",
+    "fields": {
+      "ip": "IP Address",
+      "country": "Country/Region",
+      "region": "State/Region",
+      "city": "City/District",
+      "coordinates": "Coordinates",
+      "timezone": "Timezone",
+      "asn": "ASN ID",
+      "asnOrg": "ASN Org",
+      "isp": "ISP",
+      "reverseDns": "Reverse DNS (PTR)"
+    }
+  },
+  "AI": {
+    "chatgpt": "ChatGPT (OpenAI)",
+    "claude": "Claude (Anthropic)",
+    "gemini": "Gemini (Google)",
+    "perplexity": "Perplexity",
+    "grok": "Grok (xAI)",
+    "status_available": "Available",
+    "status_restricted": "Restricted",
+    "status_blocked": "Blocked",
+    "reason_available": "This IP's geographic region and network type conform to normal access policies.",
+    "reason_restricted": "This IP belongs to a cloud provider or hosting facility. It may trigger CAPTCHAs, require human verification, or face rate limits.",
+    "reason_blocked": "The service is officially unavailable in this IP's country/region, or the service's security firewall has blocked this hosting/datacenter range."
+  },
+  "Errors": {
+    "title": "Analysis Error",
+    "desc": "Unable to fetch or parse geographical and security data for target IP. Please check your connection or try another address.",
+    "not_found_title": "404 - Page Not Found",
+    "not_found_desc": "The page you are looking for does not exist or the IP analysis report has expired.",
+    "retry": "Retry"
+  }
+}
