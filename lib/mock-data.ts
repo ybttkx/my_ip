@@ -215,6 +215,66 @@ export function getMockReport(query: string): IpReport {
     return mockReports[query]
   }
 
+  // Detect loopback, private, and reserved IPs
+  const isLoopback = query === "127.0.0.1" || query === "::1" || query.toLowerCase() === "localhost"
+  const isPrivate =
+    query.startsWith("10.") ||
+    query.startsWith("192.168.") ||
+    (query.startsWith("172.") && (() => {
+      const parts = query.split(".")
+      if (parts.length >= 2) {
+        const second = parseInt(parts[1], 10)
+        return second >= 16 && second <= 31
+      }
+      return false
+    })())
+
+  if (isLoopback || isPrivate) {
+    const label = isLoopback ? "本地回环地址 (Loopback)" : "局域网私有地址 (Private IP)"
+    return {
+      ip: query,
+      country: "保留地址",
+      countryCode: "XX",
+      region: "Local",
+      regionName: "本地局域网",
+      city: "局域网/回环",
+      lat: 0,
+      lon: 0,
+      timezone: "UTC",
+      asn: "N/A",
+      asnOrg: "IANA Reserved",
+      isp: label,
+      reverseDns: "localhost",
+      proxy: false,
+      vpn: false,
+      tor: false,
+      relay: false,
+      hosting: false,
+      type: "Unknown",
+      purityScore: {
+        score: 0,
+        stars: 1,
+        summaryZh: "此 IP 属于局域网或本地回环保留网段，无法在公网上进行纯净度与安全分析。",
+        summaryEn: "This IP is a local loopback or private network address and cannot be audited on the public Internet.",
+        details: {
+          isHosting: false,
+          isProxy: false,
+          isVpn: false,
+          isTor: false,
+          isRelay: false
+        }
+      },
+      aiAvailability: {
+        chatgpt: { name: "ChatGPT", status: "blocked", reasonZh: "本地/局域网 IP 无法连接外部 AI 服务端。", reasonEn: "Local/Private IP cannot connect to AI service endpoints." },
+        claude: { name: "Claude", status: "blocked", reasonZh: "本地/局域网 IP 无法连接外部 AI 服务端。", reasonEn: "Local/Private IP cannot connect to AI service endpoints." },
+        gemini: { name: "Gemini", status: "blocked", reasonZh: "本地/局域网 IP 无法连接外部 AI 服务端。", reasonEn: "Local/Private IP cannot connect to AI service endpoints." },
+        perplexity: { name: "Perplexity", status: "blocked", reasonZh: "本地/局域网 IP 无法连接外部 AI 服务端。", reasonEn: "Local/Private IP cannot connect to AI service endpoints." },
+        grok: { name: "Grok", status: "blocked", reasonZh: "本地/局域网 IP 无法连接外部 AI 服务端。", reasonEn: "Local/Private IP cannot connect to AI service endpoints." }
+      },
+      queryTime: new Date().toISOString()
+    }
+  }
+
   // Fallback to generating a mock report based on query length/content
   // E.g., if it starts with a letter, treat it as a domain resolution mock
   const isDomain = /[a-zA-Z]/.test(query)
@@ -257,7 +317,7 @@ export function getMockReport(query: string): IpReport {
       chatgpt: {
         name: "ChatGPT",
         status: "available",
-        reasonZh: "新加坡属于 OpenAI 官方支持访问区域，且此 IP 属于大型受信服务商段。",
+        reasonZh: "新加坡属于 OpenAI 官方支持访问区域，且此 IP 属于大型受信 service 商段。",
         reasonEn: "Singapore is a supported region for OpenAI, and this IP is in a reputable range."
       },
       claude: {
