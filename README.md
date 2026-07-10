@@ -89,6 +89,48 @@ npm run build
 
 ---
 
+## 🤖 Telegram Bot 接入指南 (Telegram Bot Setup)
+
+本项目包含了一个现成的 **Telegram Bot 消息机器人集成**。部署后，您就可以直接在 Telegram 中接收用户发来的 IP 或域名并自动回传深度分析报告。
+
+### 1. 配置环境变量 (Environment Variables)
+在项目根目录的 `.env` 或 `.env.local` 文件（或 Vercel 的环境变量配置）中，添加以下两项配置：
+
+```env
+# 1. 您的 Telegram 机器人 Token (向 @BotFather 申请获得)
+TELEGRAM_BOT_TOKEN="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
+
+# 2. 自定义的 Webhook 访问密钥 (用于防篡改安全校验，任意设置一段字符即可)
+TELEGRAM_WEBHOOK_SECRET="your_random_secure_secret_string"
+```
+
+### 2. 一键激活绑定 Webhook
+在部署上线后，您只需要在浏览器中访问一次该激活接口，系统就会自动向 Telegram 注册绑定 Webhook：
+
+```text
+访问：https://<您的网站域名>/api/telegram-setup?secret=<您设置的TELEGRAM_WEBHOOK_SECRET>
+```
+
+**成功响应**：
+```json
+{
+  "ok": true,
+  "message": "Webhook was set",
+  "webhookUrl": "https://<您的网站域名>/api/telegram-webhook",
+  "telegramResponse": {
+    "ok": true,
+    "result": true,
+    "description": "Webhook was set"
+  }
+}
+```
+
+### 3. 测试使用 (Test)
+激活成功后，在 Telegram 搜索并打开您的 Bot：
+* 发送 `/start` 即可查收欢迎语与使用示例。
+* 发送任意 IP（如 `113.88.99.123`）或域名（如 `google.com`），Bot 会自动为您实时检测并回复 HTML 格式的安全评估与 AI 兼容度结果！
+
+
 ## ☁️ 部署到 Vercel (Deployment)
 
 由于本项目已经完成了完美的 `Next.js 15` 生产依赖追踪优化，您只需：
