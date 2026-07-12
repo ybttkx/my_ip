@@ -1,26 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import dns from "dns"
 import { IpManager } from "@/lib/providers/manager"
-import { getMockReport } from "@/lib/mock-data"
 import { IpReport } from "@/lib/types"
-
-function isIpAddress(str: string): boolean {
-  const ipv4Regex = /^(((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d))$/
-  const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{1,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/
-  return ipv4Regex.test(str) || ipv6Regex.test(str)
-}
-
-async function resolveDomain(domain: string): Promise<string> {
-  try {
-    const addresses = await dns.promises.resolve4(domain)
-    if (addresses && addresses.length > 0) {
-      return addresses[0]
-    }
-  } catch (err) {
-    console.warn(`DNS resolution failed for ${domain}:`, err)
-  }
-  return domain
-}
+import { isIpAddress, isPrivateOrReservedIp } from "@/lib/ip-utils"
+import { normalizeDomain, resolveDomain } from "@/lib/dns-utils"
 
 function escapeHtml(text: string): string {
   return text
@@ -154,24 +136,39 @@ export async function POST(request: NextRequest) {
 
     // Resolve domain name to IP if it's not a direct IP address
     let targetIp = query
-    let isDomain = false
-    let resolvedFromDomain = ""
 
     if (!isIpAddress(query)) {
-      isDomain = true
-      resolvedFromDomain = await resolveDomain(query)
+      const domain = normalizeDomain(query)
+      if (!domain) {
+        await sendReply("⚠️ 请输入有效的 IP 地址或域名。\nPlease enter a valid IP address or domain name.")
+        return NextResponse.json({ ok: true })
+      }
+
+      const resolvedFromDomain = await resolveDomain(domain)
+      if (!resolvedFromDomain) {
+        await sendReply("⚠️ 域名解析失败，无法继续进行 IP 分析。\nDomain resolution failed, so IP analysis cannot continue.")
+        return NextResponse.json({ ok: true })
+      }
+
       targetIp = resolvedFromDomain
+    } else if (isPrivateOrReservedIp(query)) {
+      await sendReply("⚠️ 该地址属于私网、本地或保留网段，无法进行公网 IP 分析。\nThis address is private, local, or reserved and cannot be audited as a public IP.")
+      return NextResponse.json({ ok: true })
     }
 
     // Query IP Report
     const manager = new IpManager()
-    let report: IpReport
+    let report: IpReport | null = null
 
     try {
       report = await manager.queryIp(targetIp)
     } catch (error) {
-      console.warn("Telegram query error, falling back to mock data:", error)
-      report = getMockReport(targetIp)
+      console.warn("Telegram query error:", error)
+    }
+
+    if (!report) {
+      await sendReply("⚠️ 实时查询失败，未返回可信的 IP 报告。\nLive lookup failed and no trustworthy IP report is available.")
+      return NextResponse.json({ ok: true })
     }
 
     // Format & Send Reply

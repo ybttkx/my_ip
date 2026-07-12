@@ -7,7 +7,7 @@ export class IpApiCoProvider extends BaseIpProvider {
   async fetchReport(ip: string): Promise<ProviderReport> {
     const response = await fetch(`https://ipapi.co/${ip}/json/`, {
       next: { revalidate: 3600 } // Cache for 1 hour
-    })
+    } as RequestInit & { next: { revalidate: number } })
 
     if (!response.ok) {
       throw new Error(`ipapi.co request failed with status ${response.status}`)

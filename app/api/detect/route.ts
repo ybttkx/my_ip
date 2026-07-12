@@ -1,27 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getClientIpFromHeaders, isIpAddress, isPrivateOrReservedIp } from "@/lib/ip-utils"
 
 export async function GET(request: NextRequest) {
-  // Extract client IP from proxy headers
-  const xForwardedFor = request.headers.get("x-forwarded-for")
-  const xRealIp = request.headers.get("x-real-ip")
-  
-  let ip = ""
-  if (xForwardedFor) {
-    ip = xForwardedFor.split(",")[0].trim()
-  } else if (xRealIp) {
-    ip = xRealIp
-  } else {
-    ip = (request as any).ip || ""
-  }
+  const ip = getClientIpFromHeaders(request.headers) || (request as any).ip || ""
 
-  // If private/loopback IP (local dev), signal client to detect externally
-  const isLocal =
-    !ip ||
-    ip === "127.0.0.1" ||
-    ip === "::1" ||
-    ip.startsWith("192.168.") ||
-    ip.startsWith("10.") ||
-    ip.startsWith("172.16.")
+  // If private/loopback/reserved IP (local dev or internal proxy), signal client to detect externally.
+  const isLocal = !ip || !isIpAddress(ip) || isPrivateOrReservedIp(ip)
 
   const response = NextResponse.json(
     { ip: isLocal ? null : ip, local: isLocal },

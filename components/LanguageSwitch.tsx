@@ -10,7 +10,8 @@ export default function LanguageSwitch() {
 
   const onChangeLanguage = () => {
     const nextLocale = localActive === "en" ? "zh" : "en"
-    const newPath = pathname.replace(/^\/(en|zh)/, `/${nextLocale}/`)
+    const pathWithoutLocale = pathname.replace(/^\/(en|zh)(?=\/|$)/, "") || "/"
+    const newPath = `/${nextLocale}${pathWithoutLocale === "/" ? "" : pathWithoutLocale}`
     router.replace(newPath, {
       scroll: false,
     })

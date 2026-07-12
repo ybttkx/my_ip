@@ -8,7 +8,7 @@ export class IpApiProvider extends BaseIpProvider {
     const fields = "status,message,country,countryCode,region,regionName,city,lat,lon,timezone,isp,org,as,query,proxy,hosting"
     const response = await fetch(`http://ip-api.com/json/${ip}?fields=${fields}`, {
       next: { revalidate: 600 } // cache 10 min per IP
-    })
+    } as RequestInit & { next: { revalidate: number } })
 
     if (!response.ok) {
       throw new Error(`ip-api request failed with status ${response.status}`)

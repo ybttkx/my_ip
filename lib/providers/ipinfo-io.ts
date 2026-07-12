@@ -7,7 +7,7 @@ export class IpInfoIoProvider extends BaseIpProvider {
   async fetchReport(ip: string): Promise<ProviderReport> {
     const response = await fetch(`https://ipinfo.io/${ip}/json`, {
       next: { revalidate: 3600 } // Cache for 1 hour
-    })
+    } as RequestInit & { next: { revalidate: number } })
 
     if (!response.ok) {
       throw new Error(`ipinfo.io request failed with status ${response.status}`)
