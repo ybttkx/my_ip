@@ -12,6 +12,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "IP Intelligence Hub",
   description: "Modern & high-aesthetic IP intelligence analysis platform.",
+  metadataBase: new URL("https://ip.ybovo.com"),
 }
 
 export default async function RootLayout({

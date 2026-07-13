@@ -34,7 +34,10 @@ export async function GET(request: NextRequest) {
       webhookUrl,
       telegramResponse: data,
     })
-  } catch (error: any) {
-    return NextResponse.json({ ok: false, error: error.message })
+  } catch (error: unknown) {
+    return NextResponse.json({
+      ok: false,
+      error: error instanceof Error ? error.message : "Unknown webhook setup error",
+    })
   }
 }

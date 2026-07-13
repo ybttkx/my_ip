@@ -18,11 +18,18 @@ interface IpPageProps {
 }
 
 export async function generateMetadata({ params }: IpPageProps) {
-  const { query } = await params
+  const { locale, query } = await params
   const decodedQuery = decodeURIComponent(query)
   return {
     title: `${decodedQuery} | IP Intelligence Report`,
     description: `Detailed IP geolocation, purity clean score, and AI service compatibility check for ${decodedQuery}.`,
+    alternates: {
+      canonical: `/${locale}/ip/${encodeURIComponent(decodedQuery)}`,
+    },
+    robots: {
+      index: false,
+      follow: true,
+    },
   }
 }
 

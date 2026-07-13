@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { Copy, Check, MapPin, ExternalLink, Globe } from "lucide-react"
 import { IpReport } from "@/lib/types"
@@ -12,11 +12,17 @@ interface IpInfoCardProps {
 
 export default function IpInfoCard({ report, locale }: IpInfoCardProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => {
+    if (copyTimer.current) clearTimeout(copyTimer.current)
+  }, [])
 
   const handleCopy = (field: string, val: string) => {
     navigator.clipboard.writeText(val)
     setCopiedField(field)
-    setTimeout(() => setCopiedField(null), 1500)
+    if (copyTimer.current) clearTimeout(copyTimer.current)
+    copyTimer.current = setTimeout(() => setCopiedField(null), 1500)
   }
 
   // Simplified bilingual translation

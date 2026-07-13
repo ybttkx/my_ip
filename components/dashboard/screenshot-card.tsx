@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { Share2, Copy, Download, Check, Globe } from "lucide-react"
@@ -18,13 +18,19 @@ export default function ScreenshotCard({ report, locale }: ScreenshotCardProps) 
   const cardRef = useRef<HTMLDivElement>(null)
   const [downloading, setDownloading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => {
+    if (copiedTimer.current) clearTimeout(copiedTimer.current)
+  }, [])
 
   const handleCopyLink = () => {
     const shareUrl = `${window.location.origin}/${locale}/ip/${report.ip}`
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
         setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
+        if (copiedTimer.current) clearTimeout(copiedTimer.current)
+        copiedTimer.current = setTimeout(() => setCopied(false), 2000)
       })
       .catch(() => {})
   }
@@ -216,7 +222,7 @@ export default function ScreenshotCard({ report, locale }: ScreenshotCardProps) 
             <div className={`border-t pt-4 flex flex-col gap-1 text-[8.5px] font-bold select-none ${borderLine}`}>
               <div className="flex items-center justify-between">
                 <span className={`tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>ip.ybovo.com</span>
-                <span className={footerText}>{new Date(report.queryTime || "").toLocaleDateString()}</span>
+                <span className={footerText}>{report.queryTime?.slice(0, 10) || "-"}</span>
               </div>
               <div className={`text-[7.5px] font-normal ${footerCopy}`}>
                 © 2026 毅白 · YIBAI.

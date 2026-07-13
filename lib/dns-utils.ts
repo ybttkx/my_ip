@@ -30,11 +30,12 @@ export function normalizeDomain(input: string): string | null {
   }
 }
 
-async function resolveDnsRecord(domain: string, type: "A" | "AAAA"): Promise<string[]> {
+async function resolveDnsRecord(domain: string, type: "A" | "AAAA", signal?: AbortSignal): Promise<string[]> {
   const response = await fetch(
     `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`,
     {
       headers: { accept: "application/dns-json" },
+      signal,
     }
   )
 
@@ -50,12 +51,19 @@ async function resolveDnsRecord(domain: string, type: "A" | "AAAA"): Promise<str
 }
 
 export async function resolveDomain(domain: string): Promise<string | null> {
-  const [ipv4Result, ipv6Result] = await Promise.allSettled([
-    resolveDnsRecord(domain, "A"),
-    resolveDnsRecord(domain, "AAAA"),
-  ])
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 2500)
 
-  const ipv4Addresses = ipv4Result.status === "fulfilled" ? ipv4Result.value : []
-  const ipv6Addresses = ipv6Result.status === "fulfilled" ? ipv6Result.value : []
-  return ipv4Addresses[0] || ipv6Addresses[0] || null
+  try {
+    const [ipv4Result, ipv6Result] = await Promise.allSettled([
+      resolveDnsRecord(domain, "A", controller.signal),
+      resolveDnsRecord(domain, "AAAA", controller.signal),
+    ])
+
+    const ipv4Addresses = ipv4Result.status === "fulfilled" ? ipv4Result.value : []
+    const ipv6Addresses = ipv6Result.status === "fulfilled" ? ipv6Result.value : []
+    return ipv4Addresses[0] || ipv6Addresses[0] || null
+  } finally {
+    clearTimeout(timeout)
+  }
 }

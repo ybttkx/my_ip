@@ -23,10 +23,18 @@ export class IpManager {
     // Concurrent queries with timeout protection (3s — generous for China networks)
     const timeoutMs = 3000
     const queryPromises = this.providers.map(async (provider) => {
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error(`${provider.name} query timed out`)), timeoutMs)
-      )
-      return Promise.race([provider.fetchReport(ip), timeoutPromise])
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), timeoutMs)
+      try {
+        return await provider.fetchReport(ip, controller.signal)
+      } catch (error) {
+        if (controller.signal.aborted) {
+          throw new Error(`${provider.name} query timed out`)
+        }
+        throw error
+      } finally {
+        clearTimeout(timeout)
+      }
     })
 
     const results = await Promise.allSettled(queryPromises)

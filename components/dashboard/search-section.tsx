@@ -29,10 +29,11 @@ export default function SearchSection({ locale }: SearchSectionProps) {
   // Detect client IP once on mount — no auto-redirect, just display
   useEffect(() => {
     let cancelled = false
+    const controller = new AbortController()
     const detect = async () => {
       try {
         // Always fetch fresh, no browser cache
-        const res = await fetch("/api/detect", { cache: "no-store" })
+        const res = await fetch("/api/detect", { cache: "no-store", signal: controller.signal })
         const data = await res.json()
 
         if (!cancelled) {
@@ -41,7 +42,10 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             setDetectedIp(data.ip)
           } else if (data?.local) {
             // Local dev: server can't see real IP, ask ipify directly from client
-            const ipifyRes = await fetch("https://api.ipify.org?format=json", { cache: "no-store" })
+            const ipifyRes = await fetch("https://api.ipify.org?format=json", {
+              cache: "no-store",
+              signal: controller.signal,
+            })
             const ipifyData = await ipifyRes.json()
             if (!cancelled && ipifyData?.ip) {
               setDetectedIp(ipifyData.ip)
@@ -52,7 +56,10 @@ export default function SearchSection({ locale }: SearchSectionProps) {
       if (!cancelled) setDetecting(false)
     }
     detect()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
   }, []) // run once only
 
   const handleSearch = (e: React.FormEvent) => {

@@ -1,19 +1,32 @@
 import { BaseIpProvider, ProviderReport } from "./base"
 import { IpType } from "../types"
 
+interface IpInfoResponse {
+  error?: { message?: string }
+  ip?: string
+  country?: string
+  region?: string
+  city?: string
+  loc?: string
+  timezone?: string
+  org?: string
+  company?: { name?: string }
+}
+
 export class IpInfoIoProvider extends BaseIpProvider {
   name = "ipinfo-io"
 
-  async fetchReport(ip: string): Promise<ProviderReport> {
+  async fetchReport(ip: string, signal?: AbortSignal): Promise<ProviderReport> {
     const response = await fetch(`https://ipinfo.io/${ip}/json`, {
       next: { revalidate: 3600 } // Cache for 1 hour
+      , signal
     } as RequestInit & { next: { revalidate: number } })
 
     if (!response.ok) {
       throw new Error(`ipinfo.io request failed with status ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as IpInfoResponse
     if (data.error) {
       throw new Error(`ipinfo.io error: ${data.error.message || "Unknown error"}`)
     }
@@ -48,7 +61,7 @@ export class IpInfoIoProvider extends BaseIpProvider {
 
     return {
       providerName: this.name,
-      ip: data.ip,
+      ip: data.ip || ip,
       country: data.country, // ipinfo.io only returns 2-letter country code
       countryCode: data.country,
       region: data.region,

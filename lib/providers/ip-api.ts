@@ -1,20 +1,40 @@
 import { BaseIpProvider, ProviderReport } from "./base"
 import { IpType } from "../types"
 
+interface IpApiResponse {
+  status?: string
+  message?: string
+  country?: string
+  countryCode?: string
+  region?: string
+  regionName?: string
+  city?: string
+  lat?: number
+  lon?: number
+  timezone?: string
+  isp?: string
+  org?: string
+  as?: string
+  query?: string
+  proxy?: boolean
+  hosting?: boolean
+}
+
 export class IpApiProvider extends BaseIpProvider {
   name = "ip-api"
 
-  async fetchReport(ip: string): Promise<ProviderReport> {
+  async fetchReport(ip: string, signal?: AbortSignal): Promise<ProviderReport> {
     const fields = "status,message,country,countryCode,region,regionName,city,lat,lon,timezone,isp,org,as,query,proxy,hosting"
     const response = await fetch(`http://ip-api.com/json/${ip}?fields=${fields}`, {
       next: { revalidate: 600 } // cache 10 min per IP
+      , signal
     } as RequestInit & { next: { revalidate: number } })
 
     if (!response.ok) {
       throw new Error(`ip-api request failed with status ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as IpApiResponse
     if (data.status !== "success") {
       throw new Error(`ip-api error: ${data.message || "Unknown error"}`)
     }
@@ -40,7 +60,7 @@ export class IpApiProvider extends BaseIpProvider {
 
     return {
       providerName: this.name,
-      ip: data.query,
+      ip: data.query || ip,
       country: data.country,
       countryCode: data.countryCode,
       region: data.region,

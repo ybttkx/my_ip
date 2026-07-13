@@ -27,10 +27,10 @@ export interface ProviderReport {
   // Type candidate deduced by this provider
   type?: IpType;
   
-  rawData?: any;
+  rawData?: unknown;
 }
 
 export abstract class BaseIpProvider {
   abstract name: string;
-  abstract fetchReport(ip: string): Promise<ProviderReport>;
+  abstract fetchReport(ip: string, signal?: AbortSignal): Promise<ProviderReport>;
 }

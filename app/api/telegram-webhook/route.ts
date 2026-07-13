@@ -4,6 +4,35 @@ import { IpReport } from "@/lib/types"
 import { isIpAddress, isPrivateOrReservedIp } from "@/lib/ip-utils"
 import { normalizeDomain, resolveDomain } from "@/lib/dns-utils"
 
+interface TelegramUpdate {
+  update_id?: number
+  message?: {
+    text?: string
+    chat?: { id?: number }
+  }
+}
+
+const processedUpdates = new Map<number, number>()
+const UPDATE_TTL_MS = 10 * 60 * 1000
+const MAX_PROCESSED_UPDATES = 1000
+
+function rememberUpdate(updateId: number): boolean {
+  const now = Date.now()
+  processedUpdates.forEach((timestamp, id) => {
+    if (now - timestamp > UPDATE_TTL_MS) processedUpdates.delete(id)
+  })
+
+  if (processedUpdates.has(updateId)) return false
+  processedUpdates.set(updateId, now)
+
+  while (processedUpdates.size > MAX_PROCESSED_UPDATES) {
+    const oldest = processedUpdates.keys().next().value
+    if (oldest === undefined) break
+    processedUpdates.delete(oldest)
+  }
+  return true
+}
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -73,7 +102,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Parse Telegram Update
-    const body = await request.json()
+    const body = (await request.json()) as TelegramUpdate
+    if (body.update_id !== undefined && !rememberUpdate(body.update_id)) {
+      return NextResponse.json({ ok: true, duplicate: true })
+    }
     const message = body?.message
     if (!message || !message.chat?.id) {
       return NextResponse.json({ ok: true, message: "No message received" })
@@ -176,8 +208,11 @@ export async function POST(request: NextRequest) {
     await sendReply(responseHtml)
 
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Telegram webhook error:", error)
-    return NextResponse.json({ ok: false, error: error.message })
+    return NextResponse.json({
+      ok: false,
+      error: error instanceof Error ? error.message : "Unknown webhook error",
+    })
   }
 }

@@ -1,19 +1,36 @@
 import { BaseIpProvider, ProviderReport } from "./base"
 import { IpType } from "../types"
 
+interface IpApiCoResponse {
+  error?: boolean
+  reason?: string
+  ip?: string
+  country_name?: string
+  country_code?: string
+  region_code?: string
+  region?: string
+  city?: string
+  latitude?: number
+  longitude?: number
+  timezone?: string
+  asn?: string
+  org?: string
+}
+
 export class IpApiCoProvider extends BaseIpProvider {
   name = "ipapi-co"
 
-  async fetchReport(ip: string): Promise<ProviderReport> {
+  async fetchReport(ip: string, signal?: AbortSignal): Promise<ProviderReport> {
     const response = await fetch(`https://ipapi.co/${ip}/json/`, {
       next: { revalidate: 3600 } // Cache for 1 hour
+      , signal
     } as RequestInit & { next: { revalidate: number } })
 
     if (!response.ok) {
       throw new Error(`ipapi.co request failed with status ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as IpApiCoResponse
     if (data.error) {
       throw new Error(`ipapi.co error: ${data.reason || "Unknown error"}`)
     }
@@ -24,7 +41,7 @@ export class IpApiCoProvider extends BaseIpProvider {
 
     return {
       providerName: this.name,
-      ip: data.ip,
+      ip: data.ip || ip,
       country: data.country_name,
       countryCode: data.country_code,
       region: data.region_code,
