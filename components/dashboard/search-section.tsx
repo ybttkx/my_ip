@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Clock, Trash2, Loader2, Wifi } from "lucide-react"
+import { Search, Clock, Trash2, Loader2, Wifi, Globe, Shield } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 interface SearchSectionProps {
@@ -12,13 +12,13 @@ interface SearchSectionProps {
 export default function SearchSection({ locale }: SearchSectionProps) {
   const router = useRouter()
   const t = useTranslations("Home")
+  const [mode, setMode] = useState<"ip" | "site">("ip")
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(false)
   const [detectedIp, setDetectedIp] = useState<string | null>(null)
   const [detecting, setDetecting] = useState(true)
   const [history, setHistory] = useState<string[]>([])
 
-  // Load history from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("ip_history")
     if (stored) {
@@ -26,22 +26,18 @@ export default function SearchSection({ locale }: SearchSectionProps) {
     }
   }, [])
 
-  // Detect client IP once on mount — no auto-redirect, just display
   useEffect(() => {
     let cancelled = false
     const controller = new AbortController()
     const detect = async () => {
       try {
-        // Always fetch fresh, no browser cache
         const res = await fetch("/api/detect", { cache: "no-store", signal: controller.signal })
         const data = await res.json()
 
         if (!cancelled) {
           if (data?.ip) {
-            // Server successfully read the real IP from headers
             setDetectedIp(data.ip)
           } else if (data?.local) {
-            // Local dev: server can't see real IP, ask ipify directly from client
             const ipifyRes = await fetch("https://api.ipify.org?format=json", {
               cache: "no-store",
               signal: controller.signal,
@@ -60,22 +56,27 @@ export default function SearchSection({ locale }: SearchSectionProps) {
       cancelled = true
       controller.abort()
     }
-  }, []) // run once only
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = query.trim()
     if (!trimmed) return
-    navigateTo(trimmed)
+    navigateTo(trimmed, mode)
   }
 
-  const navigateTo = (target: string) => {
+  const navigateTo = (target: string, targetMode: "ip" | "site" = mode) => {
     setLoading(true)
-    // Save to history
     const newHistory = [target, ...history.filter(h => h !== target)].slice(0, 5)
     setHistory(newHistory)
     localStorage.setItem("ip_history", JSON.stringify(newHistory))
-    router.push(`/${locale}/ip/${encodeURIComponent(target)}`)
+
+    if (targetMode === "site") {
+      let cleanTarget = target.replace(/^https?:\/\//i, '').replace(/\/.*$/, '')
+      router.push(`/${locale}/site/${encodeURIComponent(cleanTarget)}`)
+    } else {
+      router.push(`/${locale}/ip/${encodeURIComponent(target)}`)
+    }
   }
 
   const clearHistory = () => {
@@ -85,6 +86,35 @@ export default function SearchSection({ locale }: SearchSectionProps) {
 
   return (
     <div className="w-full space-y-5">
+      {/* Mode Switcher Tabs */}
+      <div className="flex items-center justify-center gap-2 p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl w-fit mx-auto text-xs font-mono select-none">
+        <button
+          type="button"
+          onClick={() => setMode("ip")}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
+            mode === "ip"
+              ? "bg-white dark:bg-black text-slate-900 dark:text-white font-bold shadow-sm"
+              : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+          }`}
+        >
+          <Shield className="w-3.5 h-3.5" />
+          <span>{t("mode_ip")}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMode("site")}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
+            mode === "site"
+              ? "bg-white dark:bg-black text-slate-900 dark:text-white font-bold shadow-sm"
+              : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+          }`}
+        >
+          <Globe className="w-3.5 h-3.5" />
+          <span>{t("mode_site")}</span>
+        </button>
+      </div>
+
       {/* Search form */}
       <form onSubmit={handleSearch} className="relative w-full">
         <div className="relative flex items-center bg-slate-50/60 dark:bg-[#0d0d0f]/60 backdrop-blur-xl border border-slate-200 dark:border-white/8 hover:border-slate-300 dark:hover:border-white/15 rounded-xl overflow-hidden transition-all duration-200 focus-within:border-slate-400 dark:focus-within:border-white/25">
@@ -95,7 +125,7 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("placeholder")}
+            placeholder={mode === "ip" ? t("placeholder_ip") : t("placeholder_site")}
             className="w-full px-3 py-4 bg-transparent outline-none border-none text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-600 disabled:opacity-50"
             disabled={loading}
           />
@@ -107,14 +137,14 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             {loading ? (
               <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              {t("button")}
+              t("button")
             )}
           </button>
         </div>
       </form>
 
-      {/* My IP shortcut — no auto-redirect, always visible */}
-      <div className="flex items-center gap-2 text-[11px] font-mono">
+      {/* My IP shortcut */}
+      <div className="flex items-center justify-center gap-2 text-[11px] font-mono">
         <Wifi className="h-3 w-3 text-slate-400 dark:text-slate-500 flex-shrink-0" />
         <span className="text-slate-400 dark:text-slate-500">
           {t("my_ip")}:
@@ -126,7 +156,7 @@ export default function SearchSection({ locale }: SearchSectionProps) {
           </span>
         ) : detectedIp ? (
           <button
-            onClick={() => navigateTo(detectedIp)}
+            onClick={() => navigateTo(detectedIp, "ip")}
             className="text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white font-bold underline underline-offset-2 decoration-dotted cursor-pointer transition-colors"
           >
             {detectedIp}
@@ -134,22 +164,11 @@ export default function SearchSection({ locale }: SearchSectionProps) {
         ) : (
           <span className="text-slate-500">{t("detect_failed")}</span>
         )}
-        {detectedIp && !detecting && (
-          <span className="text-slate-300 dark:text-slate-700">·</span>
-        )}
-        {detectedIp && !detecting && (
-          <button
-            onClick={() => navigateTo(detectedIp)}
-            className="px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer text-[10px]"
-          >
-            分析
-          </button>
-        )}
       </div>
 
       {/* Search history */}
       {history.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-2 pt-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
               <Clock className="h-2.5 w-2.5" />
@@ -164,13 +183,13 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {history.map((ip) => (
+            {history.map((item) => (
               <button
-                key={ip}
-                onClick={() => navigateTo(ip)}
+                key={item}
+                onClick={() => navigateTo(item)}
                 className="px-2.5 py-1 text-xs font-mono bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/25 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white rounded-md transition-colors cursor-pointer"
               >
-                {ip}
+                {item}
               </button>
             ))}
           </div>

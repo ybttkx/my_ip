@@ -62,3 +62,51 @@ export interface AiAvailabilityResult {
   perplexity: AiServiceStatus;
   grok: AiServiceStatus;
 }
+
+export interface SiteInfo {
+  url: string;
+  ip?: string;
+  cname?: string;
+  supportsHttp1_1: boolean;
+  tlsVersion?: string;
+  cipher?: string;
+  cert?: {
+    subject: string;
+    issuer: string;
+    validFrom: string;
+    validTo: string;
+    daysRemaining: number;
+    serialNumber: string;
+    fingerprint: string;
+  };
+  supportsHttp2: boolean;
+  supportsHttp3: boolean;
+  supportsHsts: boolean;
+  hstsDetail?: {
+    maxAge: number;
+    includeSubDomains: boolean;
+    preload: boolean;
+  };
+  headers?: Record<string, string>;
+  server?: string;
+  statusCode?: number;
+  redirectLocation?: string;
+  timings?: {
+    dns: number;
+    tcp: number;
+    tls: number;
+    ttfb: number;
+    total: number;
+  };
+  title?: string;
+  description?: string;
+  icon?: string;
+  ipInfo?: {
+    ip: string;
+    country?: string;
+    region?: string;
+    city?: string;
+    isp?: string;
+  };
+  error?: string;
+}
