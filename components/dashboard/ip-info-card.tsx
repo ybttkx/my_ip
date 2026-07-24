@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { Copy, Check, MapPin, ExternalLink, Globe } from "lucide-react"
 import { IpReport } from "@/lib/types"
+import { useTranslations } from "next-intl"
 
 interface IpInfoCardProps {
   report: IpReport
@@ -11,6 +12,7 @@ interface IpInfoCardProps {
 }
 
 export default function IpInfoCard({ report, locale }: IpInfoCardProps) {
+  const t = useTranslations("Dashboard")
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -25,33 +27,8 @@ export default function IpInfoCard({ report, locale }: IpInfoCardProps) {
     copyTimer.current = setTimeout(() => setCopiedField(null), 1500)
   }
 
-  // Simplified bilingual translation
   const getFieldLabel = (key: string) => {
-    const labelsZh: Record<string, string> = {
-      ip: "IP 地址",
-      country: "国家/地区",
-      region: "省份 / 州",
-      city: "城市 / 区",
-      coordinates: "地理坐标",
-      timezone: "时区",
-      asn: "ASN 编号",
-      asnOrg: "ASN 机构",
-      isp: "运营商 (ISP)",
-      reverseDns: "反向 DNS (PTR)"
-    }
-    const labelsEn: Record<string, string> = {
-      ip: "IP Address",
-      country: "Country / Region",
-      region: "State / Region",
-      city: "City / District",
-      coordinates: "Coordinates",
-      timezone: "Timezone",
-      asn: "ASN ID",
-      asnOrg: "ASN Org",
-      isp: "ISP / Carrier",
-      reverseDns: "Reverse DNS"
-    }
-    return locale === "zh" ? labelsZh[key] : labelsEn[key]
+    try { return t(`fields.${key}`) } catch { return key }
   }
 
   const infoItems = [
@@ -99,7 +76,7 @@ export default function IpInfoCard({ report, locale }: IpInfoCardProps) {
     >
       <div className="border-b border-slate-200 dark:border-white/5 pb-2">
         <h3 className="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-          {locale === "zh" ? "地理与物理网络规范" : "Geographic & Physical Network Specs"}
+          {t("geo_specs")}
         </h3>
       </div>
 

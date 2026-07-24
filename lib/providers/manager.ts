@@ -15,8 +15,9 @@ export class IpManager {
   ]
 
   async queryIp(ip: string): Promise<IpReport> {
-    // Always use mock data for demo IPs — guaranteed stable display
-    if (mockReports[ip]) {
+    // In development/staging, use mock data for demo IPs (guaranteed stable display)
+    // In production, always do real query — no fake results for end users
+    if (mockReports[ip] && process.env.NODE_ENV !== "production") {
       return mockReports[ip]
     }
 

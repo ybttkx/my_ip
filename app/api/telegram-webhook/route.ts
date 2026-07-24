@@ -40,7 +40,7 @@ function escapeHtml(text: string): string {
     .replace(/>/g, "&gt;")
 }
 
-function formatReportToHtml(report: IpReport, query: string): string {
+function formatReportToHtml(report: IpReport, query: string, baseUrl: string): string {
   const getStars = (stars: number) => "⭐".repeat(stars)
   const aiStatusEmoji = (status: string) => {
     if (status === "available") return "✅"
@@ -79,7 +79,8 @@ function formatReportToHtml(report: IpReport, query: string): string {
   html += `• Perplexity: ${aiStatusEmoji(report.aiAvailability?.perplexity?.status)} ${aiStatusLabel(report.aiAvailability?.perplexity?.status)}\n`
   html += `• Grok: ${aiStatusEmoji(report.aiAvailability?.grok?.status)} ${aiStatusLabel(report.aiAvailability?.grok?.status)}\n\n`
 
-  const detailUrl = `https://ip.ybovo.com/zh/ip/${encodeURIComponent(query)}`
+  const originUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin
+	const detailUrl = `${originUrl}/zh/ip/${encodeURIComponent(query)}`
   html += `🔗 <a href="${detailUrl}">查看网页版深度扫描报告</a>`
 
   return html
@@ -204,7 +205,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Format & Send Reply
-    const responseHtml = formatReportToHtml(report, query)
+    const originUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin
+    const responseHtml = formatReportToHtml(report, query, originUrl)
     await sendReply(responseHtml)
 
     return NextResponse.json({ ok: true })

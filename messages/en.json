@@ -15,13 +15,17 @@
     "history": "Recent Searches",
     "clear_history": "Clear",
     "no_history": "No query history",
-    "invalid_input": "Please enter a valid IP address or domain"
+    "invalid_input": "Please enter a valid IP address or domain",
+    "my_ip": "My IP",
+    "detecting": "Detecting…",
+    "detect_failed": "unavailable"
   },
   "Dashboard": {
     "basic_info": "Geographic Info",
     "ip_type": "IP Type Assessment",
     "purity_score": "IP Clean Score",
     "ai_availability": "AI Service Availability",
+    "geo_specs": "Geographic & Physical Network Specs",
     "share_report": "Share Report",
     "download_card": "Save Report Image",
     "copy_link": "Copy Link",

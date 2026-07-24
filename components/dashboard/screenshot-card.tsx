@@ -220,9 +220,8 @@ export default function ScreenshotCard({ report, locale }: ScreenshotCardProps) 
 
             {/* Footer with website address, date and custom signature */}
             <div className={`border-t pt-4 flex flex-col gap-1 text-[8.5px] font-bold select-none ${borderLine}`}>
-              <div className="flex items-center justify-between">
-                <span className={`tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>ip.ybovo.com</span>
-                <span className={footerText}>{report.queryTime?.slice(0, 10) || "-"}</span>
+              <div className={`tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                {typeof window !== "undefined" ? window.location.hostname : "ip.ybovo.com"}
               </div>
               <div className={`text-[7.5px] font-normal ${footerCopy}`}>
                 © 2026 毅白 · YIBAI.

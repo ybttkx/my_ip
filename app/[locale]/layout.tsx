@@ -1,7 +1,7 @@
 import "./globals.css"
 import { Inter } from "next/font/google"
 import ThemeContextProvider from "@/context/theme-context"
-import ThemeSwitch from "@/components/ThemeTwich"
+import ThemeSwitch from "@/components/ThemeSwitch"
 import LanguageSwitch from "@/components/LanguageSwitch"
 import { NextIntlClientProvider } from "next-intl"
 import { getMessages } from "next-intl/server"

@@ -95,7 +95,7 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={locale === "zh" ? "输入 IPv4、IPv6 或域名…" : "Enter IPv4, IPv6 or domain…"}
+            placeholder={t("placeholder")}
             className="w-full px-3 py-4 bg-transparent outline-none border-none text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-600 disabled:opacity-50"
             disabled={loading}
           />
@@ -107,7 +107,7 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             {loading ? (
               <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              locale === "zh" ? "分析" : "Analyze"
+              {t("button")}
             )}
           </button>
         </div>
@@ -117,12 +117,12 @@ export default function SearchSection({ locale }: SearchSectionProps) {
       <div className="flex items-center gap-2 text-[11px] font-mono">
         <Wifi className="h-3 w-3 text-slate-400 dark:text-slate-500 flex-shrink-0" />
         <span className="text-slate-400 dark:text-slate-500">
-          {locale === "zh" ? "本机 IP:" : "My IP:"}
+          {t("my_ip")}:
         </span>
         {detecting ? (
           <span className="text-slate-400 dark:text-slate-600 flex items-center gap-1">
             <Loader2 className="h-2.5 w-2.5 animate-spin" />
-            {locale === "zh" ? "检测中…" : "Detecting…"}
+            {t("detecting")}
           </span>
         ) : detectedIp ? (
           <button
@@ -132,7 +132,7 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             {detectedIp}
           </button>
         ) : (
-          <span className="text-slate-500">{locale === "zh" ? "获取失败" : "unavailable"}</span>
+          <span className="text-slate-500">{t("detect_failed")}</span>
         )}
         {detectedIp && !detecting && (
           <span className="text-slate-300 dark:text-slate-700">·</span>
@@ -142,7 +142,7 @@ export default function SearchSection({ locale }: SearchSectionProps) {
             onClick={() => navigateTo(detectedIp)}
             className="px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer text-[10px]"
           >
-            {locale === "zh" ? "查询" : "Analyze"}
+            分析
           </button>
         )}
       </div>
@@ -153,14 +153,14 @@ export default function SearchSection({ locale }: SearchSectionProps) {
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
               <Clock className="h-2.5 w-2.5" />
-              {locale === "zh" ? "最近查询" : "Recent"}
+              {t("history")}
             </span>
             <button
               onClick={clearHistory}
               className="text-[10px] font-mono text-slate-400 dark:text-slate-600 hover:text-rose-500 dark:hover:text-rose-400 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Trash2 className="h-2.5 w-2.5" />
-              {locale === "zh" ? "清除" : "Clear"}
+              {t("clear_history")}
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">

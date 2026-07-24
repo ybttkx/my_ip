@@ -25,7 +25,7 @@ export class IpApiProvider extends BaseIpProvider {
 
   async fetchReport(ip: string, signal?: AbortSignal): Promise<ProviderReport> {
     const fields = "status,message,country,countryCode,region,regionName,city,lat,lon,timezone,isp,org,as,query,proxy,hosting"
-    const response = await fetch(`http://ip-api.com/json/${ip}?fields=${fields}`, {
+    const response = await fetch(`https://ip-api.com/json/${ip}?fields=${fields}`, {
       next: { revalidate: 600 } // cache 10 min per IP
       , signal
     } as RequestInit & { next: { revalidate: number } })

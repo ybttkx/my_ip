@@ -15,13 +15,17 @@
     "history": "最近查询记录",
     "clear_history": "清除记录",
     "no_history": "暂无查询历史",
-    "invalid_input": "请输入合法的 IP 地址或域名"
+    "invalid_input": "请输入合法的 IP 地址或域名",
+    "my_ip": "本机 IP",
+    "detecting": "检测中…",
+    "detect_failed": "获取失败"
   },
   "Dashboard": {
     "basic_info": "基础地理信息",
     "ip_type": "IP 类型研判",
     "purity_score": "IP 纯净度评分",
     "ai_availability": "AI 服务可用性",
+    "geo_specs": "地理与物理网络规范",
     "share_report": "分享分析报告",
     "download_card": "保存分享图片",
     "copy_link": "复制分享链接",

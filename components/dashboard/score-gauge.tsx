@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ShieldCheck, ShieldAlert, ShieldX, Star } from "lucide-react"
 import { PurityScoreResult } from "@/lib/types"
+import { useTranslations } from "next-intl"
 
 interface ScoreGaugeProps {
   scoreData: PurityScoreResult
@@ -11,6 +12,7 @@ interface ScoreGaugeProps {
 }
 
 export default function ScoreGauge({ scoreData, locale }: ScoreGaugeProps) {
+  const t = useTranslations("Dashboard")
   const { score, stars, summaryZh, summaryEn, details } = scoreData
   const [animatedScore, setAnimatedScore] = useState(0)
 
@@ -45,11 +47,11 @@ export default function ScoreGauge({ scoreData, locale }: ScoreGaugeProps) {
   }
 
   const getVerdictLabel = (val: number) => {
-    if (val >= 80) return locale === "zh" ? "极佳" : "Excellent"
-    if (val >= 60) return locale === "zh" ? "良好" : "Good"
-    if (val >= 40) return locale === "zh" ? "一般" : "Average"
-    if (val >= 20) return locale === "zh" ? "较低" : "Warning"
-    return locale === "zh" ? "高风险" : "Dangerous"
+    if (val >= 80) return t("score_excellent")
+    if (val >= 60) return t("score_good")
+    if (val >= 40) return t("score_average")
+    if (val >= 20) return t("score_warning")
+    return t("score_danger")
   }
 
   return (
@@ -70,7 +72,7 @@ export default function ScoreGauge({ scoreData, locale }: ScoreGaugeProps) {
       {/* Title */}
       <div className="space-y-1">
         <span className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">
-          {locale === "zh" ? "IP 纯净度评估" : "IP Clean Score"}
+          {t("purity_score")}
         </span>
       </div>
 

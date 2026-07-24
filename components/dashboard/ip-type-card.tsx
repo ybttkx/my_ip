@@ -65,13 +65,13 @@ export default function IpTypeCard({ primaryType, locale }: IpTypeCardProps) {
     >
       <div className="border-b border-slate-200 dark:border-white/5 pb-2">
         <h3 className="text-xs font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-          {locale === "zh" ? "分类与应用场景研判" : "Network Classification Weights"}
+          {t("ip_type")}
         </h3>
       </div>
 
       {/* Main highlighted category badge */}
       <div className="text-xs font-mono text-slate-500 dark:text-slate-400">
-        {locale === "zh" ? "核心研判结果" : "Primary Classification"}:{" "}
+        {locale === "zh" ? "核心研判结果:" : "Primary Classification:"}:{" "}
         <span className="text-slate-900 dark:text-white font-bold underline underline-offset-4 decoration-black/20 dark:decoration-white/20">
           {getPrimaryTypeLabel(primaryType)}
         </span>
